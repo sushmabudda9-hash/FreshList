@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "594766810656",
+    "project_id": "freshlist-2570f",
+    "storage_bucket": "freshlist-2570f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594766810656:android:a4fbd32379f5ae66f17645",
+        "android_client_info": {
+          "package_name": "com.example.freshlist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7mN2BZqSDI7AzoY9xqe2pUuGAzan_pSg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
