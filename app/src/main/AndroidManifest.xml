@@ -26,6 +26,8 @@
             android:name=".SigninActivity"/>
         <activity
             android:name=".SignUpActivity"/>
+        <activity
+            android:name=".HomeActivity"/>
     </application>
 
 </manifest>
