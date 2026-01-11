@@ -10,10 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,11 +42,10 @@ class SigninActivity : ComponentActivity() {
 @Composable
 fun SignInScreen() {
 
-    // Gold + Yellow gradient background
     val gradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFFFFD700), // Gold
-            Color(0xFFFFF176)  // Light Yellow
+            Color(0xFFFFD700),
+            Color(0xFFFFF176)
         )
     )
 
@@ -58,6 +54,9 @@ fun SignInScreen() {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // 🔐 GDPR consent state
+    var gdprAccepted by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -104,45 +103,74 @@ fun SignInScreen() {
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ✅ GDPR CONSENT ROW
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = gdprAccepted,
+                    onCheckedChange = { gdprAccepted = it }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "I agree to the GDPR policy and consent to data processing",
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    if (email.isBlank() || password.isBlank()) {
-                        Toast.makeText(
-                            context,
-                            "Please enter email and password",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        // Firebase sign in
-                        auth.signInWithEmailAndPassword(email.trim(), password)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(
-                                        context,
-                                        "Signed in successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                    when {
+                        email.isBlank() || password.isBlank() -> {
+                            Toast.makeText(
+                                context,
+                                "Please enter email and password",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                                    // Go to HomeActivity after login
-                                    val intent = Intent(context, HomeActivity::class.java)
-                                    context.startActivity(intent)
-                                    (context as? Activity)?.finish()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        task.exception?.message ?: "Sign in failed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                        !gdprAccepted -> {
+                            Toast.makeText(
+                                context,
+                                "Please accept GDPR consent to continue",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> {
+                            auth.signInWithEmailAndPassword(email.trim(), password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Toast.makeText(
+                                            context,
+                                            "Signed in successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                        val intent =
+                                            Intent(context, HomeActivity::class.java)
+                                        context.startActivity(intent)
+                                        (context as? Activity)?.finish()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            task.exception?.message
+                                                ?: "Sign in failed",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
-                            }
+                        }
                     }
                 },
                 modifier = Modifier
